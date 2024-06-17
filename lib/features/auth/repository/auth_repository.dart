@@ -10,18 +10,19 @@ import 'package:reddit_clone/core/type_defs.dart';
 import 'package:reddit_clone/models/user_model.dart';
 import 'package:reddit_clone/core/constants/constants.dart';
 
-final authRepositoryProvider = Provider((ref) => persist(
+
+final authRepositoryProvider = Provider((ref) => AuthRepository(
       firestore: ref.read(firestoreProvider),
       auth: ref.read(authProvider),
       googleSignIn: ref.read(googleSignInProvider),
     ));
 
-class persist {
+class AuthRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
 
-  persist({
+  AuthRepository({
     required FirebaseFirestore firestore,
     required FirebaseAuth auth,
     required GoogleSignIn googleSignIn,
@@ -31,6 +32,8 @@ class persist {
 
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
+
+  Stream<User?> get authStateChange => _auth.authStateChanges();
 
   FutureEither<UserModel> signInWithGoogle() async {
     try {
@@ -75,8 +78,7 @@ class persist {
 
   // This function is used to get the user data from the firestore, which will be used in the main.dart to persist the user data
   Stream<UserModel> getUserData(String uid) {
-    return _users.doc(uid).snapshots().map((event) =>
-    UserModel.fromMap(event.data() as Map<String, dynamic>)
-    );
+    return _users.doc(uid).snapshots().map(
+        (event) => UserModel.fromMap(event.data() as Map<String, dynamic>));
   }
 }
