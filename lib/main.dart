@@ -46,15 +46,17 @@ class _MyAppState extends ConsumerState<MyApp> {
             debugShowCheckedModeBanner: false,
             title: 'Reddit Clone',
             theme: Pallete.darkModeAppTheme,
-            routerDelegate: RoutemasterDelegate(routesBuilder: (context) {
-              if (data != null) {
-                getData(ref, data);
-                if (ref.watch(userProvider) != null) {
-                  return loggedInRoute;
+            routerDelegate: RoutemasterDelegate(
+              routesBuilder: (context) {
+                if (data != null) {
+                  getData(ref, data);
+                  if (ref.watch(userProvider) != null) {
+                    return loggedInRoute;
+                  }
                 }
-              }
-              return loggedOutRoute;
-            }),
+                return loggedOutRoute;
+              },
+            ),
             routeInformationParser: const RoutemasterParser(),
           ),
           error: (error, stackTrace) => ErrorText(error: error.toString()),
